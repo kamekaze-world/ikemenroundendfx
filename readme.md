@@ -10,6 +10,8 @@
 
 ### FOR IKEMEN GO .99 OR LATER ONLY
 
+To download, go to the code button and download the zip.
+
 ## Change History
 ### 1.1:
 Roundnotover not being respected fixed.
