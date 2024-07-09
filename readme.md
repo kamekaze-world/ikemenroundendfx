@@ -1,12 +1,12 @@
 # IKEMEN GO Universal Round Transition System 1.1 By Kamekaze 
-## 6/23/2024
+
 
 ### FOR IKEMEN GO .99 OR LATER ONLY
 
 To download, go to the code button and download the zip.
 
 ## Change History
-### 1.1:
+### 1.1 - 6/23/2024:
 Roundnotover not being respected fixed.
 
 ## Description
