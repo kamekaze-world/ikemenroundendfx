@@ -1,12 +1,5 @@
 # IKEMEN GO Universal Round Transition System 1.1 By Kamekaze 
 ## 6/23/2024
-**Mail** - ilive@kamekaze.world
-
-**Twitter** - @OldEra_Kamekaze
-
-**Bsky** - kamekaze.world
-
-**Fgc network** - Kamekaze@fgc.network
 
 ### FOR IKEMEN GO .99 OR LATER ONLY
 
