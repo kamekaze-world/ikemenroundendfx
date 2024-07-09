@@ -40,7 +40,7 @@ over.waittime = 45
 ```
 
 ## Instructions
-
+Add the roundtransition.zss file to your save/config.json under **CommonFiles**
 For the round end transition effect, you must define the total time the transition effect will take to complete, the value is labled as:
 ``root,map(transition_time):=80;``
 
