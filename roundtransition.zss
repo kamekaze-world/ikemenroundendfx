@@ -1,0 +1,259 @@
+#IKEMEN GO Universal Round Transition System 1.1 By Kamekaze 
+#6/23/2024
+# mail - ilive@kamekaze.world
+# Twitter - @OldEra_Kamekaze
+#bsky - kamekaze.world
+#fgc network - Kamekaze@fgc.network
+#FOR IKEMEN GO .99 OR LATER ONLY
+
+#1.1:
+#Roundnotover not being respected fixed.
+
+#This code allows you to create a custom round end and round start
+#animation as zss code. The functions below give you total control of the transitions
+#either the round end or round start. They are the only things you should directly
+#modify other than the fight.def and transition time values specified below.
+
+#The "IKT" refers to the fx the transition uses by default under 
+#"ik_roundtransition" def, air, sff and snd files. The ik_roundtransition.def must be added to your
+#commonFX area of the config file and this file must be added to your CommonStates area of your config file
+
+[function roundendfx(time)]
+if (win||drawgame&&teamside=1) && $time=0 {
+
+
+
+	explod{
+		anim: IKT1000;
+		postype: back;
+		pos: 160,140;
+		velocity: 0,0;
+		accel: 0,0;
+		removetime: -1;
+		ontop:1
+	}
+}
+
+##Used during the next round
+[function roundstartfx(time)]
+
+if teamside=1
+{
+
+if $time=0{
+	explod{
+		anim: IKT1001;
+		postype: back;
+		pos: 160,140;
+		velocity: 0,0;
+		accel: 0,0;
+		removetime: 90;
+		pausemovetime:90;
+		ontop:1
+	}
+}
+if $time=[0,80]
+{
+assertspecial{flag:intro;redirectid:root,id}
+pause{time:3;movetime:3}
+}
+
+}
+ignorehitpause{
+assertspecial{flag:roundnotskip;redirectid:root,id}
+}
+
+#DO NOT EDIT A SINGLE THING UNDER THIS STATEMENT EVER EXCEPT THE FIGHT.DEF PART OR THIS TIME VALUE BELOW EVER!
+[Statedef 4123120; physics:n;type:s;anim:-2;movetype:I;]
+var(0):=0;
+if facing=-1
+{
+turn{}
+}
+#how long is our transition in frames?
+root,map(transition_time):=80;
+
+[statedef +1]
+if  !ishelper
+{
+if !numhelper(4123120)
+{
+#transition helper
+Helper{
+		id: 4123120;
+		stateno: 4123120;
+		ownpal: 1;
+		name:"Round over transition";
+		size.height: 0;
+		keyctrl:0;
+		pausemovetime:99999;
+		supermovetime:99999;
+	}
+}
+
+}
+
+if ishelper(4123120)
+{
+
+
+##next round start code
+if  roundstate<2
+{
+call roundstartfx(time);
+}
+
+}
+
+#reset transition maps
+if  roundno>1 && roundstate=0 && time=0
+{ 
+map(ik_tran_unasserted_ia):=0;
+map(ik_tran_overtimecounter):=0;
+map(ik_tran_roundovercounter):=0;
+map(ik_tran_fxtime):=0;
+map(ik_tran_overtimeoffset):=0;
+map(ik_tran_skip):=0;
+}
+
+if roundstate!=4
+{
+#======set our values. Must match fight.def
+map(over_time):=270;
+map(over_waittime):=45;
+}
+if !map(over_wintime)&&roundstate!=4||roundstate!=4&&map(over_wintime)=-1{
+#if values dont match this will keep us on track
+map(over_wintime):=45;
+}
+#====================
+#failsafe
+if roundstate=3 && !ishelper
+{
+nothitby{value:SCA}
+}
+
+#whos asserting roundnotover, wait for them before we start.
+if (map(ik_tran_overtimecounter)=0 || map(ik_tran_overtimecounter)>0)&& !ishelper {
+map(ik_tran_isasserted):=(isasserted(roundnotover)&&!map(ik_tran_unasserted_ia) && !ishelper);
+
+if roundstate=4 && map(ik_tran_isasserted) && !map(ik_tran_skip) && alive 
+{
+assertspecial{flag:roundnotskip;flag2:postroundinput}
+if command="x"||command="y"||command="z"||command="w"||command="z"||command="b"||command="c"||command="d"||command="start"
+{
+map(ik_tran_skip):=1;
+}
+}
+
+}
+
+#failsafe round end prevention
+if  map(ik_tran_overtimecounter) >-1&& !ishelper && (!map(ik_tran_isasserted)&&!p2,map(ik_tran_isasserted))&&roundstate=4 &&alive && !map(ik_tran_skip)&&map(over_wintime)=-1
+{
+map(ik_tran_unasserted_ia):=1;
+assertspecial{flag:roundnotover;flag2:roundnotskip}
+}
+
+#prevent auto-transition
+if (map(ik_tran_fxtime)=[1,map(transition_time)] ) 
+{
+if map(ik_tran_fxtime) || map(ik_tran_unasserted_ia)&&alive
+{
+assertspecial{flag:roundnotover}
+}
+}
+
+
+
+
+
+#transition over, forcibly go to next round.
+if map(ik_tran_fxtime)>map(transition_time)&&roundstate=4
+{
+assertspecial{flag:postroundinput}
+assertinput{flag:x}
+}
+[statedef -4]
+
+
+
+
+#Another failsafe, do we need it? Maybe. I ain't touching it.
+if roundstate=4 && !ishelper && map(ik_tran_fxtime)<map(transition_time) && map(ik_tran_fxtime)
+{
+assertspecial{flag:roundnotskip}
+}
+
+
+
+
+if roundstate=4 && !ishelper
+{
+
+if !map(ik_tran_overtimecounter) &&  map(over_wintime)=0 
+{
+map(ik_tran_overtimecounter):=(map(over_time)-map(over_waittime));
+map(ik_tran_ph):=map(ik_tran_overtimecounter);
+}
+
+
+map(ik_tran_overtimeoffset):=map(ik_tran_overtimeoffset)+1;
+
+if map(over_wintime)>-1 &&alive
+{
+map(over_wintime):=map(over_wintime)-1;
+}
+
+if map(over_wintime)=-1 &&map(ik_tran_overtimecounter)>-1 && (!map(ik_tran_isasserted)&&!p2,map(ik_tran_isasserted))
+{
+if map(ik_tran_overtimeoffset)>map(ik_tran_overtimecounter) && map(ik_tran_overtimecounter) = map(ik_tran_ph)-3|| map(ik_tran_skip)&& map(ik_tran_overtimecounter)>3
+{
+map(ik_tran_overtimecounter):=3;
+}
+assertspecial{flag:roundnotover;flag2:roundnotskip}
+map(ik_tran_overtimecounter):=map(ik_tran_overtimecounter)-1;
+
+}
+
+
+}
+
+
+if map(over_wintime)=-1 && roundstate=4&&!map(ik_tran_fxtime) && ((map(over_wintime)=-1&&map(ik_tran_overtimecounter)<=1) ||map(ik_tran_skip))
+{
+map(ik_tran_roundovercounter):=map(ik_tran_roundovercounter)+1;
+
+if map(ik_tran_roundovercounter)=[0,6]||map(ik_rematch) 
+{
+assertspecial{flag:roundnotover;flag2:roundnotskip}
+
+
+}
+if map(ik_tran_roundovercounter)>map(ik_tran_overtimecounter)+1&&!map(ik_rematch)  {
+map(ik_tran_fxtime):=1;
+
+}
+}
+
+if map(ik_tran_fxtime) =[1, map(transition_time)] 
+{
+call roundendfx(map(ik_tran_fxtime)-1);
+map(ik_tran_fxtime):=map(ik_tran_fxtime)+1;
+if !p2,map(ik_tran_fxtime)
+{
+p2,map(ik_tran_fxtime):=map(ik_tran_fxtime);
+}
+
+if map(ik_tran_fxtime) 
+{
+assertspecial{flag:roundnotover}
+}
+}
+
+
+if map(ik_tran_fxtime)>map(transition_time)&&roundstate=4&&!ishelper
+{
+assertspecial{flag:postroundinput}
+assertinput{flag:s}
+}
