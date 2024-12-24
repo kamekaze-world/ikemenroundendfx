@@ -106,7 +106,7 @@ call roundstartfx(time);
 }
 
 #reset transition maps
-if  roundno>1 && roundstate=0 && time=0
+if  roundno>1 && roundstate<=1 && time<=1
 { 
 map(ik_tran_unasserted_ia):=0;
 map(ik_tran_overtimecounter):=0;
