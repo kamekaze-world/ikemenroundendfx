@@ -137,7 +137,7 @@ nothitby{value:SCA}
 if (map(ik_tran_overtimecounter)=0 || map(ik_tran_overtimecounter)>0)&& !ishelper {
 map(ik_tran_isasserted):=(isasserted(roundnotover)&&!map(ik_tran_unasserted_ia) && !ishelper);
 
-if roundstate=4 && map(ik_tran_isasserted) && !map(ik_tran_skip) && alive 
+if roundstate=4 && map(ik_tran_isasserted) && !map(ik_tran_skip) && (alive|| drawgame&&teamside=1) 
 {
 assertspecial{flag:roundnotskip;flag2:postroundinput}
 if command="x"||command="y"||command="z"||command="w"||command="z"||command="b"||command="c"||command="d"||command="start"
@@ -149,7 +149,7 @@ map(ik_tran_skip):=1;
 }
 
 #failsafe round end prevention
-if  map(ik_tran_overtimecounter) >-1&& !ishelper && (!map(ik_tran_isasserted)&&!p2,map(ik_tran_isasserted))&&roundstate=4 &&alive && !map(ik_tran_skip)&&map(over_wintime)=-1
+if  map(ik_tran_overtimecounter) >-1&& !ishelper && (!map(ik_tran_isasserted)&&!p2,map(ik_tran_isasserted))&&roundstate=4 &&(alive|| drawgame&&teamside=1) && !map(ik_tran_skip)&&map(over_wintime)=-1
 {
 map(ik_tran_unasserted_ia):=1;
 assertspecial{flag:roundnotover;flag2:roundnotskip}
@@ -158,7 +158,7 @@ assertspecial{flag:roundnotover;flag2:roundnotskip}
 #prevent auto-transition
 if (map(ik_tran_fxtime)=[1,map(transition_time)] ) 
 {
-if map(ik_tran_fxtime) || map(ik_tran_unasserted_ia)&&alive
+if map(ik_tran_fxtime) || map(ik_tran_unasserted_ia)&&(alive|| drawgame&&teamside=1)
 {
 assertspecial{flag:roundnotover}
 }
@@ -200,7 +200,7 @@ map(ik_tran_ph):=map(ik_tran_overtimecounter);
 
 map(ik_tran_overtimeoffset):=map(ik_tran_overtimeoffset)+1;
 
-if map(over_wintime)>-1 &&alive
+if map(over_wintime)>-1 &&(alive|| drawgame&&teamside=1)
 {
 map(over_wintime):=map(over_wintime)-1;
 }
