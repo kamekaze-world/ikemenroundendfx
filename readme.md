@@ -1,4 +1,4 @@
-# IKEMEN GO Universal Round Transition System 1.1 By Kamekaze 
+# IKEMEN GO Universal Round Transition System 1.2 By Kamekaze 
 
 
 ### FOR IKEMEN GO .99 OR LATER ONLY
