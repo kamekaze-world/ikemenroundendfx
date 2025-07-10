@@ -6,6 +6,9 @@
 To download, go to the code button and download the zip.
 
 ## Change History
+### 1.2 - 7/10/2025:
+Uses fightscreenvar, no need to sync values between fight.def and zss file anymore.
+
 ### 1.1 - 6/23/2024:
 Roundnotover not being respected fixed.
 
@@ -18,19 +21,6 @@ modify other than the fight.def and transition time values specified below.
 The **"IKT"** refers to the fx the transition uses by default under 
 **"ik_roundtransition"** def, air, sff and snd files. The ik_roundtransition.def must be added to your
 commonFX area of the config file and this file must be added to your CommonStates area of your config file.
-
-The values within the roundtransition.zss **MUST** match the values in the fight.def as long as we cannot see the values in engine. EG.
-
-```
-map(over_time):=270;
-map(over_waittime):=45;
-map(over_wintime):=45;
-
-values from fight.def
-over.time = 270 
-over.wintime = 45 
-over.waittime = 45 
-```
 
 ## Instructions
 Add the roundtransition.zss file to your save/config.json under **CommonFiles**
