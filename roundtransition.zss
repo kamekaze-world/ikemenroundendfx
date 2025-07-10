@@ -6,6 +6,9 @@
 #fgc network - Kamekaze@fgc.network
 #FOR IKEMEN GO .99 OR LATER ONLY
 
+#1.2:
+#Uses fightscreenvar
+
 #1.1:
 #Roundnotover not being respected fixed.
 
@@ -119,12 +122,13 @@ map(ik_tran_skip):=0;
 if roundstate!=4
 {
 #======set our values. Must match fight.def
-map(over_time):=270;
-map(over_waittime):=45;
+
+map(over_time):=FightScreenVar(round.over.time);
+map(over_waittime):=FightScreenVar(round.over.waittime);
 }
 if !map(over_wintime)&&roundstate!=4||roundstate!=4&&map(over_wintime)=-1{
 #if values dont match this will keep us on track
-map(over_wintime):=45;
+map(over_wintime):=FightScreenVar(round.over.wintime);
 }
 #====================
 #failsafe
