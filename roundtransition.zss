@@ -77,6 +77,9 @@ turn{}
 root,map(transition_time):=80;
 
 [statedef +1]
+if teamside=[1,2] {
+map(training_tran):=0;
+
 if  !ishelper
 {
 if !numhelper(4123120)
@@ -89,6 +92,7 @@ Helper{
 		name:"Round over transition";
 		size.height: 0;
 		keyctrl:0;
+		pos:0,60;
 		pausemovetime:99999;
 		supermovetime:99999;
 	}
@@ -98,10 +102,15 @@ Helper{
 
 if ishelper(4123120)
 {
-
-
+if teamside=1{
+map(p2):=player(2),id;
+}
+else{
+map(p2):=player(1),id;
+}
 ##next round start code
-if  roundstate<2
+
+if  roundstate<2 && (gamemode!="training"  || map(training_tran))
 {
 call roundstartfx(time);
 }
@@ -109,7 +118,7 @@ call roundstartfx(time);
 }
 
 #reset transition maps
-if  roundno>1 && roundstate<=1 && time<=1
+if  roundno>1 && roundstate=0 && time=0
 { 
 map(ik_tran_unasserted_ia):=0;
 map(ik_tran_overtimecounter):=0;
@@ -119,7 +128,11 @@ map(ik_tran_overtimeoffset):=0;
 map(ik_tran_skip):=0;
 }
 
-if roundstate!=4
+if numhelper(4123120){
+let p2 = helper(4123120),map(p2);
+}
+
+if roundstate!=4 
 {
 #======set our values. Must match fight.def
 
@@ -139,9 +152,9 @@ nothitby{value:SCA}
 
 #whos asserting roundnotover, wait for them before we start.
 if (map(ik_tran_overtimecounter)=0 || map(ik_tran_overtimecounter)>0)&& !ishelper {
-map(ik_tran_isasserted):=(isasserted(roundnotover)&&!map(ik_tran_unasserted_ia) && !ishelper);
+map(ik_tran_isasserted):=(map(ik_tran_df)=2&&!map(ik_tran_unasserted_ia) && !ishelper);
 
-if roundstate=4 && map(ik_tran_isasserted) && !map(ik_tran_skip) && (alive|| drawgame&&teamside=1&&!alive) 
+if roundstate=4 && map(ik_tran_isasserted) && !map(ik_tran_skip) && (alive || drawgame&&teamside=1&&!alive) 
 {
 assertspecial{flag:roundnotskip;flag2:postroundinput}
 if command="x"||command="y"||command="z"||command="w"||command="z"||command="b"||command="c"||command="d"||command="start"
@@ -152,8 +165,14 @@ map(ik_tran_skip):=1;
 
 }
 
+if numhelper(4123120){
+let p2 = helper(4123120),map(p2);
+}
+
+
+
 #failsafe round end prevention
-if  map(ik_tran_overtimecounter) >-1&& !ishelper && (!map(ik_tran_isasserted)&&!p2,map(ik_tran_isasserted))&&roundstate=4 &&(alive|| drawgame&&teamside=1&&!alive) && !map(ik_tran_skip)&&map(over_wintime)=-1
+if  map(ik_tran_overtimecounter) >-1&& !ishelper && (!map(ik_tran_isasserted)&&!playerid($p2),map(ik_tran_isasserted))&&roundstate=4 &&(alive|| drawgame&&teamside=1&&!alive) && !map(ik_tran_skip)&&map(over_wintime)=-1
 {
 map(ik_tran_unasserted_ia):=1;
 assertspecial{flag:roundnotover;flag2:roundnotskip}
@@ -169,8 +188,20 @@ assertspecial{flag:roundnotover}
 }
 
 
+if   map(ik_tran_overtimecounter)>-1&& map(over_wintime)=-1{
+if !isasserted(roundnotover) || map(ik_tran_df)<2{
+assertspecial{flag:roundnotover;flag2:roundnotskip}
+map(ik_tran_start):=1;
+}
+if map(ik_tran_df)>0  {
+map(ik_tran_df):=map(ik_tran_df)-1;
+}
+}
 
 
+if roundstate=4 && (map(ik_tran_overtimecounter)>-1|| map(over_wintime)>0) && isasserted(roundnotover) && !map(ik_tran_start){
+map(ik_tran_df):=2;
+}
 
 #transition over, forcibly go to next round.
 if map(ik_tran_fxtime)>map(transition_time)&&roundstate=4
@@ -178,7 +209,15 @@ if map(ik_tran_fxtime)>map(transition_time)&&roundstate=4
 assertspecial{flag:postroundinput}
 assertinput{flag:x}
 }
+
+
+
+}
 [statedef -4]
+if teamside=[1,2]{
+if numhelper(4123120){
+let p2 = helper(4123120),map(p2);
+}
 
 
 
@@ -186,7 +225,7 @@ assertinput{flag:x}
 #Another failsafe, do we need it? Maybe. I ain't touching it.
 if roundstate=4 && !ishelper && map(ik_tran_fxtime)<map(transition_time) && map(ik_tran_fxtime)
 {
-assertspecial{flag:roundnotskip}
+assertspecial{flag:roundnotskip;flag2:roundnotover}
 }
 
 
@@ -197,6 +236,7 @@ if roundstate=4 && !ishelper
 
 if !map(ik_tran_overtimecounter) &&  map(over_wintime)=0 
 {
+
 map(ik_tran_overtimecounter):=(map(over_time)-map(over_waittime));
 map(ik_tran_ph):=map(ik_tran_overtimecounter);
 }
@@ -209,7 +249,7 @@ if map(over_wintime)>-1 &&(alive|| drawgame&&teamside=1&&!alive)
 map(over_wintime):=map(over_wintime)-1;
 }
 
-if map(over_wintime)=-1 &&map(ik_tran_overtimecounter)>-1 && (!map(ik_tran_isasserted)&&!p2,map(ik_tran_isasserted))
+if map(over_wintime)=-1 &&map(ik_tran_overtimecounter)>-1 && map(ik_tran_start)
 {
 if map(ik_tran_overtimeoffset)>map(ik_tran_overtimecounter) && map(ik_tran_overtimecounter) = map(ik_tran_ph)-3|| map(ik_tran_skip)&& map(ik_tran_overtimecounter)>3
 {
@@ -244,9 +284,9 @@ if map(ik_tran_fxtime) =[1, map(transition_time)]
 {
 call roundendfx(map(ik_tran_fxtime)-1);
 map(ik_tran_fxtime):=map(ik_tran_fxtime)+1;
-if !p2,map(ik_tran_fxtime)
+if !playerid($p2),map(ik_tran_fxtime)
 {
-p2,map(ik_tran_fxtime):=map(ik_tran_fxtime);
+playerid($p2),map(ik_tran_fxtime):=map(ik_tran_fxtime);
 }
 
 if map(ik_tran_fxtime) 
@@ -260,4 +300,8 @@ if map(ik_tran_fxtime)>map(transition_time)&&roundstate=4&&!ishelper
 {
 assertspecial{flag:postroundinput}
 assertinput{flag:s}
+}
+
+
+
 }
