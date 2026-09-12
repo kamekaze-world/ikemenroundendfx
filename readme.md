@@ -6,6 +6,9 @@
 To download, go to the code button and download the zip.
 
 ## Change History
+### 1.3 - 9/12/2026:
+Fixes breaking change introduced in 1.0RC5
+
 ### 1.2 - 7/10/2025:
 Uses fightscreenvar, no need to sync values between fight.def and zss file anymore.
 
