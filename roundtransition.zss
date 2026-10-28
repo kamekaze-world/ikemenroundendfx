@@ -129,7 +129,7 @@ map(ik_tran_skip):=0;
 }
 
 if numhelper(4123120){
-let p2 = helper(4123120),map(p2);
+let p2 = cond(helper(4123120),map(p2),helper(4123120),map(p2),id);
 }
 
 if roundstate!=4 
@@ -166,7 +166,7 @@ map(ik_tran_skip):=1;
 }
 
 if numhelper(4123120){
-let p2 = helper(4123120),map(p2);
+let p2 = cond(helper(4123120),map(p2),helper(4123120),map(p2),id);
 }
 
 
